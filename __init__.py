@@ -84,6 +84,7 @@ class GOXPORT_OT_export(Operator):
         active = context.view_layer.objects.active
 
         mesh_prefix = context.scene.goxport_mesh_prefix
+        # TODO: instead of removing the mat prefix should be set on export
         mat_prefix = context.scene.goxport_material_prefix
 
         # skip objects whose ancestor is also selected (they export under that ancestor)
