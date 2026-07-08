@@ -14,6 +14,7 @@ import re
 from bpy.props import StringProperty, EnumProperty
 from bpy.types import Operator, Panel
 
+
 def _preset_items(self, context):
     items = [("__NONE__", "None (use defaults)", "")]
     for path in bpy.utils.preset_paths("operator"):
@@ -31,7 +32,12 @@ def _load_preset(filepath):
     with open(filepath) as f:
         for match in re.finditer(r"op\.(\w+)\s*=\s*(.+)$", f.read(), re.MULTILINE):
             name = match.group(1)
-            if name in ("filepath", "use_selection", "export_apply", "export_image_format"):
+            if name in (
+                "filepath",
+                "use_selection",
+                "export_apply",
+                "export_image_format",
+            ):
                 continue
             try:
                 settings[name] = eval(match.group(2))
@@ -54,7 +60,9 @@ class GOXPORT_OT_export(Operator):
         export_dir = context.scene.goxport_export_directory
 
         if not export_dir:
-            self.report({"ERROR"}, "No export directory set — set one in the GoXport panel")
+            self.report(
+                {"ERROR"}, "No export directory set — set one in the GoXport panel"
+            )
             return {"CANCELLED"}
 
         if not os.path.isdir(export_dir):
@@ -98,7 +106,7 @@ class GOXPORT_OT_export(Operator):
 
                 saved_root_name = root.name
                 if mesh_prefix and root.name.startswith(mesh_prefix):
-                    root.name = root.name[len(mesh_prefix):]
+                    root.name = root.name[len(mesh_prefix) :]
 
                 saved_mat_names = {}
                 if mat_prefix:
@@ -110,7 +118,7 @@ class GOXPORT_OT_export(Operator):
                                 seen.add(mat)
                                 if mat.name.startswith(mat_prefix):
                                     saved_mat_names[mat] = mat.name
-                                    mat.name = mat.name[len(mat_prefix):]
+                                    mat.name = mat.name[len(mat_prefix) :]
 
                 saved_loc = root.location.copy()
                 root.location = (0.0, 0.0, 0.0)
@@ -120,7 +128,7 @@ class GOXPORT_OT_export(Operator):
                     obj.select_set(True)
                 context.view_layer.objects.active = root
 
-                filepath = os.path.join(export_dir, f"{root.name}{ext}")
+                filepath = os.path.join(export_dir, f"{mesh_prefix}{root.name}{ext}")
 
                 bpy.ops.export_scene.gltf(
                     filepath=filepath,
@@ -147,7 +155,10 @@ class GOXPORT_OT_export(Operator):
             context.view_layer.objects.active = active
 
         count = exported
-        self.report({"INFO"}, f"Exported {count} object{'s' if count > 1 else ''} → {export_dir}")
+        self.report(
+            {"INFO"},
+            f"Exported {count} object{'s' if count > 1 else ''} → {export_dir}",
+        )
         return {"FINISHED"}
 
 
